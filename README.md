@@ -5,69 +5,78 @@ Aplikacja tworzona jest na potrzeby przedmiotu Zawansowane aplikacje internetowe
 ## Opis systemu
 System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarządzanie salami, organizowanie harmonogramu zajęć oraz powiadamianie użytkowników o nadchodzących rezerwacjach. System zapewnia również obsługę autoryzacji i uwierzytelniania użytkowników za pomocą Auth0.
 ## Cele systemu
-+Umożliwienie rezerwacji sal wykładowych przez użytkowników.
-+Zarządzanie dostępnością sal oraz kalendarzem.
-+Wysyłanie powiadomień o zbliżających się rezerwacjach.
-+Zabezpieczenie dostępu poprzez system logowania i autoryzacji.
-+Możliwość przeglądania historii rezerwacji.
++ Umożliwienie rezerwacji sal wykładowych przez użytkowników.
++ Zarządzanie dostępnością sal oraz kalendarzem.
++ Wysyłanie powiadomień o zbliżających się rezerwacjach.
++ Zabezpieczenie dostępu poprzez system logowania i autoryzacji.
++ Możliwość przeglądania historii rezerwacji.
 ## Użytkownicy systemu
-+Administrator: zarządza systemem, dodaje/usuwa sale, edytuje harmonogram.
-+Wykładowca: rezerwuje sale na wykłady i inne wydarzenia.
-+Student: przegląda dostępne sale oraz harmonogram zajęć.
++ Administrator: zarządza systemem, dodaje/usuwa sale, edytuje harmonogram.
++ Wykładowca: rezerwuje sale na wykłady i inne wydarzenia.
++ Student: przegląda dostępne sale oraz harmonogram zajęć.
 ## Funkcjonalności
-4.1 Moduł zarządzania użytkownikami
-•	Rejestracja i logowanie użytkowników przez Auth0.
-•	Role użytkowników (administrator, wykładowca, student).
-•	Możliwość zarządzania kontami użytkowników przez administratora.
-4.2 Moduł rezerwacji
-•	Możliwość rezerwacji sal w oparciu o dostępne terminy.
-•	Sprawdzenie dostępności sali w kalendarzu.
-•	Anulowanie i edytowanie rezerwacji.
-•	Historia rezerwacji.
-4.3 Kalendarz
-•	Widok miesięczny, tygodniowy i dzienny.
-•	Integracja z rezerwacjami.
-•	Możliwość filtrowania po salach i terminach.
-4.4 Powiadomienia
-•	Wysyłanie powiadomień e-mailowych o rezerwacjach.
-•	Powiadomienia o nadchodzących zajęciach.
-•	Opcjonalne powiadomienia push.
-4.5 Zarządzanie salami
-•	Dodawanie i edytowanie sal (pojemność, wyposażenie, lokalizacja).
-•	Blokowanie sal na określony czas.
-5. Technologie
+### Moduł zarządzania użytkownikami
++ Rejestracja i logowanie użytkowników przez Auth0.
++ Role użytkowników (administrator, wykładowca, student).
++ Możliwość zarządzania kontami użytkowników przez administratora.
+### Moduł rezerwacji
++ Możliwość rezerwacji sal w oparciu o dostępne terminy.
++ Sprawdzenie dostępności sali w kalendarzu.
++ Anulowanie i edytowanie rezerwacji.
++ Historia rezerwacji.
+### Kalendarz
++ Widok miesięczny, tygodniowy i dzienny.
++ Integracja z rezerwacjami.
++ Możliwość filtrowania po salach i terminach.
+### Powiadomienia
++ Wysyłanie powiadomień e-mailowych o rezerwacjach.
++ Powiadomienia o nadchodzących zajęciach.
++ Opcjonalne powiadomienia push.
+### Zarządzanie salami
++ Dodawanie i edytowanie sal (pojemność, wyposażenie, lokalizacja).
++ Blokowanie sal na określony czas.
+## Technologie
 Frontend
-•	Next.js - framework React zapewniający SSR i lepszą optymalizację.
-•	TailwindCSS - szybkie i elastyczne stylowanie UI.
-•	ShadCN - nowoczesne komponenty UI dla lepszego wyglądu.
+ + Next.js - framework React zapewniający SSR i lepszą optymalizację.
+ + TailwindCSS - szybkie i elastyczne stylowanie UI.
+ + ShadCN - nowoczesne komponenty UI dla lepszego wyglądu.
 Backend
-•	Node.js + NestJS - modularna struktura API.
-•	PostgreSQL - relacyjna baza danych z Prisma ORM.
-•	Firebase Cloud Messaging - powiadomienia push.
+ + Node.js + NestJS - modularna struktura API.
+ + PostgreSQL - relacyjna baza danych z Prisma ORM.
+ + Firebase Cloud Messaging - powiadomienia push.
 Autoryzacja
-•	Auth0 - obsługa OAuth i JWT do logowania.
-6. Architektura systemu
-•	Frontend: Next.js + React
-•	Backend: NestJS (Node.js)
-•	Baza danych: PostgreSQL (Prisma ORM)
-•	Hosting: Vercel (frontend) + Railway (backend, baza danych)
-7. Podsumowanie
-System rezerwacji sal wykładowych zapewni wygodny sposób na organizowanie zajęć oraz zarządzanie dostępnością sal. Dzięki nowoczesnym technologiom aplikacja będzie szybka, responsywna i łatwa w obsłudze.
+ + Auth0 - obsługa OAuth i JWT do logowania.
+## Architektura systemu
++ Frontend: Next.js + React
++ Backend: NestJS (Node.js)
++ Baza danych: PostgreSQL (Prisma ORM)
++ Hosting: Vercel (frontend) + Railway (backend, baza danych)
+## Przypadki użycia (Use Case)
 
-7. Przypadki użycia (Use Case)
 Use Case 1: Rezerwacja sali przez wykładowcę
+
 Aktor: Wykładowca
+
 Opis: Wykładowca loguje się do systemu, wybiera odpowiednią salę i dostępny termin, a następnie potwierdza rezerwację. System zapisuje rezerwację i wysyła powiadomienie.
+
 Use Case 2: Przeglądanie dostępnych sal przez studenta
+
 Aktor: Student
+
 Opis: Student loguje się do systemu, przegląda kalendarz i dostępność sal. Może filtrować wyniki według daty, nazwy sali lub lokalizacji.
+
 Use Case 3: Anulowanie rezerwacji przez administratora
+
 Aktor: Administrator
+
 Opis: Administrator loguje się do systemu, wyszukuje istniejącą rezerwację i anuluje ją. System wysyła powiadomienie do wykładowcy o anulowaniu rezerwacji.
+
 Use Case 4: Automatyczne powiadomienie o rezerwacji
+
 Aktor: System
+
 Opis: Po dokonaniu rezerwacji system automatycznie wysyła powiadomienie e-mailowe do użytkownika o potwierdzeniu rezerwacji oraz przypomnienie na dzień przed wydarzeniem.
-8. Podsumowanie
+## Podsumowanie
 System rezerwacji sal wykładowych zapewni wygodny sposób na organizowanie zajęć oraz zarządzanie dostępnością sal. Dzięki nowoczesnym technologiom aplikacja będzie szybka, responsywna i łatwa w obsłudze.
 
 
