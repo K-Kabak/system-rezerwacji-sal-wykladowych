@@ -40,10 +40,12 @@ Frontend
  + Next.js - framework React zapewniający SSR i lepszą optymalizację.
  + TailwindCSS - szybkie i elastyczne stylowanie UI.
  + ShadCN - nowoczesne komponenty UI dla lepszego wyglądu.
+
 Backend
  + Node.js + NestJS - modularna struktura API.
  + PostgreSQL - relacyjna baza danych z Prisma ORM.
  + Firebase Cloud Messaging - powiadomienia push.
+ 
 Autoryzacja
  + Auth0 - obsługa OAuth i JWT do logowania.
 ## Architektura systemu
@@ -59,17 +61,23 @@ Aktor: Wykładowca
 
 Opis: Wykładowca loguje się do systemu, wybiera odpowiednią salę i dostępny termin, a następnie potwierdza rezerwację. System zapisuje rezerwację i wysyła powiadomienie.
 
+----------------------------------
+
 Use Case 2: Przeglądanie dostępnych sal przez studenta
 
 Aktor: Student
 
 Opis: Student loguje się do systemu, przegląda kalendarz i dostępność sal. Może filtrować wyniki według daty, nazwy sali lub lokalizacji.
 
+----------------------------------
+
 Use Case 3: Anulowanie rezerwacji przez administratora
 
 Aktor: Administrator
 
 Opis: Administrator loguje się do systemu, wyszukuje istniejącą rezerwację i anuluje ją. System wysyła powiadomienie do wykładowcy o anulowaniu rezerwacji.
+
+----------------------------------
 
 Use Case 4: Automatyczne powiadomienie o rezerwacji
 
