@@ -54,26 +54,26 @@ Autoryzacja
 + Baza danych: PostgreSQL (Prisma ORM)
 ## Przypadki użycia (Use Case)
 
-Use Case 1: Rezerwacja sali przez wykładowcę
-Aktor: Wykładowca
+Use Case 1: Rezerwacja sali przez wykładowcę<br>
+Aktor: Wykładowca <br>
 Opis: Wykładowca loguje się do systemu, wybiera odpowiednią salę i dostępny termin, a następnie potwierdza rezerwację. System zapisuje rezerwację i wysyła powiadomienie.
 
 ----------------------------------
 
-Use Case 2: Przeglądanie dostępnych sal przez studenta
-Aktor: Student
+Use Case 2: Przeglądanie dostępnych sal przez studenta <br>
+Aktor: Student <br>
 Opis: Student loguje się do systemu, przegląda kalendarz i dostępność sal. Może filtrować wyniki według daty, nazwy sali lub lokalizacji.
 
 ----------------------------------
 
-Use Case 3: Anulowanie rezerwacji przez administratora
-Aktor: Administrator
+Use Case 3: Anulowanie rezerwacji przez administratora<br>
+Aktor: Administrator<br>
 Opis: Administrator loguje się do systemu, wyszukuje istniejącą rezerwację i anuluje ją. System wysyła powiadomienie do wykładowcy o anulowaniu rezerwacji.
 
 ----------------------------------
 
-Use Case 4: Automatyczne powiadomienie o rezerwacji
-Aktor: System
+Use Case 4: Automatyczne powiadomienie o rezerwacji<br>
+Aktor: System<br>
 Opis: Po dokonaniu rezerwacji system automatycznie wysyła powiadomienie e-mailowe do użytkownika o potwierdzeniu rezerwacji oraz przypomnienie na dzień przed wydarzeniem.
 ## Wizualizacja aplikacji 
 ----------------------------------
