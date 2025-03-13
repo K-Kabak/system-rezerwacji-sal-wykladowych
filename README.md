@@ -1,5 +1,16 @@
 # System rezerwacji sal wykładowych
 
+## Metodyka 
+
+
+
+
+
+
+
+
+
+
 
 
 ## Getting started
