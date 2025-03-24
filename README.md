@@ -43,7 +43,7 @@ Frontend
 
 Backend
  + Node.js + NestJS - modularna struktura API.
- + PostgreSQL - relacyjna baza danych z Prisma ORM.
+ + MySQL - relacyjna baza danych z Prisma ORM.
  + Firebase Cloud Messaging - powiadomienia push.
 
 Autoryzacja
