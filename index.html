@@ -1,11 +1,63 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rezerwacja i Kalendarz</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    
+  <div class="Rezerwacja sal">
+    <aside class="sidebar">
+      <div class="logo">📘</div>
+      <nav>
+        <ul>
+          <li id="nav-rezerwacje" class="active">Rezerwacje</li>
+          <li id="nav-kalendarz">Kalendarz</li>
+          <li>Wiadomości</li>
+        </ul>
+      </nav>
+      <div class="Legeda">
+        <p><span class="dot blue"></span> Aula</p>
+        <p><span class="dot violet"></span> Wykład</p>
+        <p><span class="dot red"></span> Laboratorium</p>
+      </div>
+      <div class="bottom-menu">
+        <p>⚙️ Ustawienia</p>
+        <p>🚪 Wyloguj</p>
+      </div>
+    </aside>
+
+    <!-- Widok Rezerwacji -->
+    <main class="main-content" id="view-rezerwacje">
+      <h2>Rezerwacje sal</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Numer sali</th>
+            <th>Ilość miejsc</th>
+            <th>Typ</th>
+            <th>Kierunek</th>
+            <th>Data</th>
+            <th>Godzina</th>
+            <th>Akcja</th>
+          </tr>
+        </thead>
+        <tbody id="roomTable"></tbody>
+      </table>
+    </main>
+
+    <!-- Widok Kalendarza -->
+    <main class="main-content hidden" id="view-kalendarz">
+        <div class="calendar-header">
+          <button id="prevMonth">&#8592;</button>
+          <h2 id="monthTitle"></h2>
+          <button id="nextMonth">&#8594;</button>
+        </div>
+        <div class="calendar-days" id="calendarDays"></div>
+        <div class="calendar" id="calendarGrid"></div>
+      </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
