@@ -1,164 +1,539 @@
+/* === RESET & GLOBAL === */
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #111;
-    color: #fff;
-  }
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #111;
+  color: #fff;
+}
 
-  .dashboard {
-    display: flex;
-    height: 100vh;
-  }
+.hidden {
+  display: none;
+}
 
-  .sidebar {
-    width: 200px;
-    background: linear-gradient(180deg, #1a1a1a, #000);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+button {
+  background: #3a3aff;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
 
-  .sidebar .logo {
-    font-size: 24px;
-    margin-bottom: 30px;
-  }
+button:hover {
+  background: #5353ff;
+}
 
-  .sidebar ul {
-    list-style: none;
-    padding: 0;
-  }
+/* === DASHBOARD LAYOUT === */
+.dashboard {
+  display: flex;
+  align-items: flex-start;
+}
 
-  .sidebar ul li {
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #222;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background-color: #191919;
+}
 
-  .sidebar ul li.active {
-    background: #3a3aff;
-    font-weight: bold;
-  }
+/* === SIDEBAR === */
+.sidebar {
+  width: 200px;
+  background: rgba(30, 30, 30, 0.95);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  margin: 20px 20px 20px 20px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  align-self: flex-start;
+}
 
-  .bottom-menu p {
-    font-size: 14px;
-    margin: 5px 0;
-  }
+.sidebar .logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+}
 
-  .main-content {
-    flex: 1;
-    padding: 30px;
-    background-color: #191919;
-    overflow-y: auto;
-  }
+.sidebar .logo img {
+  max-width: 250px;
+  height: auto;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #000;
-    border: 1px solid #333;
-  }
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-  th, td {
-    padding: 12px;
-    border: 1px solid #333;
+.sidebar ul li {
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #222;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.sidebar ul li:hover {
+  background: #2a2a2a;
+}
+
+.sidebar ul li.active {
+  background: #3a3aff;
+  font-weight: bold;
+  color: #fff;
+}
+
+.bottom-menu {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.bottom-menu p {
+  margin: 5px 0;
+}
+
+/* === LEGENDA === */
+.legend,
+#legend {
+  margin-top: 10px;
+  font-size: 13px;
+  visibility: hidden;
+  height: auto;
+}
+
+.legend .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.legend .dot.blue { background-color: #3a3aff; }
+.legend .dot.violet { background-color: #b27bff; }
+.legend .dot.red { background-color: #ff4d4d; }
+
+/* === TABLE === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #000;
+  border: 1px solid #333;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #333;
+  text-align: center;
+}
+
+th {
+  background: #222;
+}
+
+/* === CALENDAR HEADER === */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.calendar-header button {
+  background-color: #3a3aff;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  font-size: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.calendar-header button:hover {
+  background-color: #5353ff;
+}
+
+/* === CALENDAR STRUCTURE === */
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: #fff;
+  color: #000;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #000;
+  border-radius: 0 0 12px 12px;
+  gap: 5px;
+  padding: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+.calendar div {
+  min-height: 100px;
+  border-radius: 12px;
+  background-color: #111;
+  border: 1px solid #2a2a2a;
+  padding: 10px;
+  font-size: 14px;
+  position: relative;
+  color: #fff;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+}
+
+.calendar div:hover {
+  background-color: #1a1a1a;
+  box-shadow: 0 0 10px #3a3aff44;
+  transform: scale(1.015);
+  z-index: 1;
+}
+
+.calendar div.today {
+  background: #3a3aff;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 15px #3a3aff99;
+}
+
+/* === DAY NUMBER & DOTS === */
+.day-number {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.day-text {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.dot-placeholder {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  gap: 3px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.day-number .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0;
+}
+
+.day-number .dot.blue { background-color: #3a3aff; }
+.day-number .dot.violet { background-color: #b27bff; }
+.day-number .dot.red { background-color: #ff4d4d; }
+
+/* === Style Okna Modalnego (Ulepszone) === */
+.modal-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background-color: #222; 
+  padding: 25px 35px; 
+  border-radius: 10px; 
+  border-top: 3px solid #3a3aff; 
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  width: 90%;
+  max-width: 550px; 
+  max-height: 85vh; 
+  overflow-y: auto; 
+  position: relative;
+  color: #eee;
+  transform: translateY(-20px); 
+  transition: transform 0.25s ease;
+}
+
+.modal-overlay.visible .modal-content {
+    transform: translateY(0); 
+}
+
+.close-button {
+  position: absolute;
+  top: 12px; 
+  right: 15px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+  padding: 5px; 
+}
+.close-button:hover {
+  color: #fff;
+}
+
+#modal-title {
+  margin-top: 0;
+  margin-bottom: 25px; 
+  border-bottom: 1px solid #444;
+  padding-bottom: 15px; 
+  font-size: 1.5em; 
+  font-weight: 600; 
+  color: #fff;
+}
+#modal-title #modal-date {
+    font-weight: normal; 
+    color: #ccc; 
+}
+
+
+#modal-reservations-list {
+  padding-bottom: 10px;
+}
+
+.reservation-item {
+  background-color: #303030;
+  border-left: 4px solid #3a3aff;
+  border-radius: 5px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  font-size: 1em;
+
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: break-all;
+}
+
+
+.reservation-item p {
+  margin: 6px 0; 
+  line-height: 1.5;
+}
+.reservation-item strong {
+    color: #aaa; 
+    margin-right: 8px;
+    display: inline-block; 
+}
+.no-reservations {
     text-align: center;
-  }
+    color: #888; 
+    padding: 30px 0; 
+    font-style: italic;
+}
 
-  th {
-    background: #222;
-  }
+/* Stylizacja paska przewijania wewnątrz modala */
+.modal-content::-webkit-scrollbar { width: 6px; }
+.modal-content::-webkit-scrollbar-track { background: #222; border-radius: 3px;} /* Dopasuj tło do modala */
+.modal-content::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; border: 1px solid #222;} /* Dopasuj border do tła */
+.modal-content::-webkit-scrollbar-thumb:hover { background-color: #777; }
+.modal-content { scrollbar-width: thin; scrollbar-color: #555 #222; } /* Dopasuj kolory */
 
-  button {
-    background: #3a3aff;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+    /* === Style dla pól formularza w tabeli Rezerwacje === */
+    #roomTable select,
+    #roomTable input[type="date"],
+    #roomTable input[type="time"] {
+      background-color: #333; 
+      color: #eee; 
+      border: 1px solid #555; 
+      border-radius: 4px; 
+      padding: 6px 8px; 
+      font-family: inherit; 
+      font-size: 0.9em; 
+      box-sizing: border-box; 
+      width: 100%; 
+      margin: 0; 
+      min-height: 34px; 
+    }
 
-  button:hover {
-    background: #5353ff;
-  }
+    /* Styl dla stanu focus */
+    #roomTable select:focus,
+    #roomTable input[type="date"]:focus,
+    #roomTable input[type="time"]:focus {
+      outline: none;
+      border-color: #3a3aff; 
+      box-shadow: 0 0 5px rgba(58, 58, 255, 0.5); 
+    }
 
-  .hidden {
-    display: none;
-  }
+    /* Poprawki dla wyglądu strzałki w select (WebKit/Standard) */
+    #roomTable select {
+      appearance: none; 
+      -webkit-appearance: none; 
+      -moz-appearance: none;
+      /* Dodaj własną strzałkę jako tło (prosty przykład SVG w kolorze #ccc) */
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23cccccc%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 10px auto;
+      padding-right: 30px; 
+    }
 
-  .legend {
-    margin-top: 40px;
-    font-size: 13px;
-  }
+    #roomTable input[type="date"],
+    #roomTable input[type="time"] {
+      color-scheme: dark; /* Sugeruje przeglądarce ciemny schemat dla wbudowanych kontrolek */
+      min-width: 120px; /* Minimalna szerokość dla pól daty/czasu */
+    }
 
-  .dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin: 2px;
-  }
+    /* Poprawka koloru tekstu placeholdera (np. dd.mm.rrrr) w WebKit */
+    #roomTable input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+    #roomTable input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+      color: #aaa; 
+    }
+    /* Ustawienie koloru tekstu, gdy data/czas nie są wybrane */
+    #roomTable input[type="date"]:invalid,
+    #roomTable input[type="time"]:invalid {
+      color: #aaa; 
+    }
+    #roomTable input[type="date"],
+    #roomTable input[type="time"] {
+      color: #eee; 
+    }
 
-  .dot.blue { background-color: #3a3aff; }
-  .dot.violet { background-color: #b27bff; }
-  .dot.red { background-color: #ff4d4d; }
-  .month-section {
-    margin-bottom: 40px;
-  }
 
-  .month-title {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
+    /* Styl ikonek kalendarza/zegara w WebKit */
+    #roomTable input[type="date"]::-webkit-calendar-picker-indicator,
+    #roomTable input[type="time"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 0.8;
+    }
+    #roomTable input[type="date"]::-webkit-calendar-picker-indicator:hover,
+    #roomTable input[type="time"]::-webkit-calendar-picker-indicator:hover {
+        opacity: 1.0;
+    }
 
-  .calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background-color: #fff;
-    color: #000;
-    text-align: center;
-    font-weight: bold;
-    padding: 10px 0;
-  }
+/* === Style Okna Powiadomienia === */
+.notification-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); 
+  z-index: 1050; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.notification-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
 
-  .calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background: #000;
-    border: 1px solid #333;
-    gap: 1px;
-  }
+.notification-content {
+  background-color: #2d2d2d;
+  padding: 25px 30px 30px; 
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  width: 90%;
+  max-width: 380px; 
+  position: relative;
+  color: #eee;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+.notification-overlay.visible .notification-content {
+    transform: scale(1);
+}
 
-  .calendar div {
-    min-height: 80px;
-    border: 1px solid #333;
-    padding: 8px;
-    font-size: 14px;
-    position: relative;
-  }
+/* Dla przycisku zamknięcia */
+.notification-content .close-button {
+  position: absolute; top: 8px; right: 10px; font-size: 24px;
+  font-weight: bold; color: #aaa; cursor: pointer; line-height: 1; padding: 5px;
+}
+.notification-content .close-button:hover { color: #fff; }
 
-  .day-number {
-    font-weight: bold;
-  }
-  .calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
+.notification-content h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3em;
+}
+#notification-message {
+    font-size: 1em;
+    line-height: 1.5;
+    margin-bottom: 10px; 
+}
 
-  .calendar-header button {
-    background-color: #3a3aff;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    font-size: 18px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+/* Dodatkowe style dla rozróżnienia sukcesu/błędu */
+.notification-content.success {
+    border-top: 4px solid #4dff4d; 
+}
+.notification-content.error {
+     border-top: 4px solid #ff4d4d; 
+}
 
-  .calendar-header button:hover {
-    background-color: #5353ff;
-  }
+.message-input,
+.message-textarea {
+  width: 100%;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  font-size: 1em;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.message-input:focus,
+.message-textarea:focus {
+  outline: none;
+  border-color: #3a3aff;
+  box-shadow: 0 0 5px rgba(58, 58, 255, 0.5);
+}
+
+#nav-wiadomosci {
+  position: relative;
+}
+.notification-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background-color: #ff4d4d;
+  border-radius: 50%;
+  display: none;
+  border: 1px solid #222;
+}
+#nav-wiadomosci.has-notification .notification-dot {
+  display: block;
+}
