@@ -37,14 +37,12 @@ System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarz
 + Blokowanie sal na określony czas.
 ## Technologie
 Frontend
- + Next.js - framework React zapewniający SSR i lepszą optymalizację.
- + TailwindCSS - szybkie i elastyczne stylowanie UI.
- + ShadCN - nowoczesne komponenty UI dla lepszego wyglądu.
+ + Style.css - niestandardowe style w ciemnym motywie, responsywny układ.
+ + Javascript - dynamiczne UI, logika aplikacji, integracja z backendem.
 
 Backend
- + Node.js + NestJS - modularna struktura API.
- + MySQL - relacyjna baza danych
- + Firebase Cloud Messaging - powiadomienia push.
+ + Node.js - serwer aplikacji, obsługa API i sesji użytkowników.
+ + MySQL - relacyjna baza danych.
 
 Autoryzacja
  + Auth0 - obsługa OAuth i JWT do logowania.
