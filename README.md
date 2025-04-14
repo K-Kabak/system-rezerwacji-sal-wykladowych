@@ -3,9 +3,9 @@
 ## Cel wdrożenia projektu
 Aplikacja tworzona jest na potrzeby przedmiotu Zawansowane aplikacje internetowe. 
 ## Opis systemu
-System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarządzanie salami, organizowanie harmonogramu zajęć oraz powiadamianie użytkowników o nadchodzących rezerwacjach. System zapewnia również obsługę autoryzacji i uwierzytelniania użytkowników za pomocą Auth0.
+System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarządzanie salami, organizowanie harmonogramu zajęć oraz powiadamianie użytkowników o nadchodzących rezerwacjach. System zapewnia również obsługę autoryzacji i uwierzytelniania użytkowników.
 ## Cele systemu
-+ Umożliwienie rezerwacji sal wykładowych przez użytkowników.
++ Umożliwienie rezerwacji sal wykładowych przez wykładowców.
 + Zarządzanie dostępnością sal oraz kalendarzem.
 + Wysyłanie powiadomień o zbliżających się rezerwacjach.
 + Zabezpieczenie dostępu poprzez system logowania i autoryzacji.
@@ -16,7 +16,7 @@ System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarz
 + Student: przegląda dostępne sale oraz harmonogram zajęć.
 ## Funkcjonalności
 ### Moduł zarządzania użytkownikami
-+ Rejestracja i logowanie użytkowników przez Auth0.
++ Rejestracja i logowanie użytkowników.
 + Role użytkowników (administrator, wykładowca, student).
 + Możliwość zarządzania kontami użytkowników przez administratora.
 ### Moduł rezerwacji
@@ -25,10 +25,10 @@ System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarz
 + Anulowanie i edytowanie rezerwacji.
 + Historia rezerwacji.
 ### Kalendarz
-+ Widok miesięczny, tygodniowy i dzienny.
++ Widok miesięczny.
 + Integracja z rezerwacjami.
-+ Możliwość filtrowania po salach i terminach.
-### Powiadomienia
++ Kolorowe oznaczenia typów sal.
+### Powiadomienia i wiadomości
 + Wysyłanie powiadomień e-mailowych o rezerwacjach.
 + Powiadomienia o nadchodzących zajęciach.
 + Opcjonalne powiadomienia push.
