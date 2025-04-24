@@ -3,13 +3,12 @@
 ## Cel wdrożenia projektu
 Aplikacja tworzona jest na potrzeby przedmiotu Zawansowane aplikacje internetowe. 
 ## Opis systemu
-System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarządzanie salami, organizowanie harmonogramu zajęć oraz powiadamianie użytkowników o nadchodzących rezerwacjach. System zapewnia również obsługę autoryzacji i uwierzytelniania użytkowników.
+System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarządzanie salami, organizowanie harmonogramu zajęć oraz powiadamianie użytkowników o nadchodzących rezerwacjach. System zapewnia również obsługę rejestracji i logowania użytkowników.
 ## Cele systemu
 + Umożliwienie rezerwacji sal wykładowych przez wykładowców.
 + Zarządzanie dostępnością sal oraz kalendarzem.
-+ Wysyłanie powiadomień o zbliżających się rezerwacjach.
++ Wysyłanie powiadomień o zbliżających się rezerwacjach. (W trakcie implementacji)
 + Zabezpieczenie dostępu poprzez system logowania i autoryzacji.
-+ Możliwość przeglądania historii rezerwacji.
 ## Użytkownicy systemu
 + Administrator: zarządza systemem, dodaje/usuwa sale, edytuje harmonogram.
 + Wykładowca: rezerwuje sale na wykłady i inne wydarzenia.
@@ -35,21 +34,22 @@ System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarz
 ### Zarządzanie salami
 + Dodawanie i edytowanie sal (pojemność, wyposażenie, lokalizacja).
 + Blokowanie sal na określony czas.
+### Wiadomości
++ Wysyłanie wiadomości do innych użytkowników systemu 
++ Powiadomienia o nowych wiadomościach 
 ## Technologie
 Frontend
+ + HTML
  + Style.css - niestandardowe style w ciemnym motywie, responsywny układ.
  + Javascript - dynamiczne UI, logika aplikacji, integracja z backendem.
 
 Backend
  + Node.js - serwer aplikacji, obsługa API i sesji użytkowników.
  + MySQL - relacyjna baza danych.
-
-Autoryzacja
- + Auth0 - obsługa OAuth i JWT do logowania.
 ## Architektura systemu
-+ Frontend: Next.js + React
++ Frontend: JavaScript
 + Backend: NestJS (Node.js)
-+ Baza danych: PostgreSQL (Prisma ORM)
++ Baza danych: MySQL
 ## Przypadki użycia (Use Case)
 
 Use Case 1: Rezerwacja sali przez wykładowcę<br>
@@ -60,22 +60,22 @@ Opis: Wykładowca loguje się do systemu, wybiera odpowiednią salę i dostępny
 
 Use Case 2: Przeglądanie dostępnych sal przez studenta <br>
 Aktor: Student <br>
-Opis: Student loguje się do systemu, przegląda kalendarz i dostępność sal. Może filtrować wyniki według daty, nazwy sali lub lokalizacji.
+Opis: Student loguje się do systemu, przegląda kalendarz i dostępność sal. W kalendarzu wyświetlane są tylko rezerwacji grupy do której zapisany jest student.
 
 ----------------------------------
 
-Use Case 3: Anulowanie rezerwacji przez administratora<br>
-Aktor: Administrator<br>
-Opis: Administrator loguje się do systemu, wyszukuje istniejącą rezerwację i anuluje ją. System wysyła powiadomienie do wykładowcy o anulowaniu rezerwacji.
-
-----------------------------------
-
-Use Case 4: Automatyczne powiadomienie o rezerwacji<br>
+Use Case 3: Automatyczne powiadomienie o rezerwacji<br>
 Aktor: System<br>
 Opis: Po dokonaniu rezerwacji system automatycznie wysyła powiadomienie e-mailowe do użytkownika o potwierdzeniu rezerwacji oraz przypomnienie na dzień przed wydarzeniem.
+
+----------------------------------
+
+Use Case 4: Wysyłanie wiadomości do innych użytkowników<br>
+Aktor: Student/Wykładowca <br>
+Opis: Aktor przechodzi w zakładke wiadomości, wprowadza email użytkownika do którego chce wysłać wiadomość. System po wpisaniu drugiej litry automatycznie podpowiada emaile, które znajdują się w bazie. Następnie użytkownik wprowadza treść wiadomości.
 ## Wizualizacja aplikacji 
 ----------------------------------
 ## Licencja
 ----------------------------------
 ## Podsumowanie
-System rezerwacji sal wykładowych zapewni wygodny sposób na organizowanie zajęć oraz zarządzanie dostępnością sal. Dzięki nowoczesnym technologiom aplikacja będzie szybka, responsywna i łatwa w obsłudze.
+System rezerwacji sal wykładowych zapewni wygodny sposób na organizowanie zajęć oraz zarządzanie dostępnością sal. Dzięki nowoczesnym technologiom aplikacja będzie szybka, przystępna i łatwa w obsłudze.
