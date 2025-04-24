@@ -8,7 +8,7 @@ System rezerwacji sal wykładowych to aplikacja internetowa umożliwiająca zarz
 + Umożliwienie rezerwacji sal wykładowych przez wykładowców.
 + Zarządzanie dostępnością sal oraz kalendarzem.
 + Wysyłanie powiadomień o zbliżających się rezerwacjach. (W trakcie implementacji)
-+ Zabezpieczenie dostępu poprzez system logowania i autoryzacji.
++ Zabezpieczenie dostępu poprzez system logowania i rejestracji.
 ## Użytkownicy systemu
 + Administrator: zarządza systemem, dodaje/usuwa sale, edytuje harmonogram.
 + Wykładowca: rezerwuje sale na wykłady i inne wydarzenia.
