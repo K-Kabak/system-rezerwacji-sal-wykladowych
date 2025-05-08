@@ -74,6 +74,25 @@ Use Case 4: Wysyłanie wiadomości do innych użytkowników<br>
 Aktor: Student/Wykładowca <br>
 Opis: Aktor przechodzi w zakładke wiadomości, wprowadza email użytkownika do którego chce wysłać wiadomość. System po wpisaniu drugiej litry automatycznie podpowiada emaile, które znajdują się w bazie. Następnie użytkownik wprowadza treść wiadomości.
 ## Wizualizacja aplikacji 
+### Wygląd strony rejestracji
+![Ekran rejestracji aplikacji](images/mockups/register.png "Strona rejestracji")
+
+----------------------------------
+
+![Ekran logowania aplikacji](images/mockups/login.png.png "Strona logowania")
+
+----------------------------------
+
+![Ekran rezerwacji](images/mockups/reservation.png "Strona rezerwacji")
+
+----------------------------------
+
+![Ekran kalendarza](images/mockups/calendar.png "Strona kalendarza")
+
+----------------------------------
+
+![Ekran wiadomości](images/mockups/messages.png "Strona wiadomości")
+
 ----------------------------------
 
 ## Przypadki Testowe Manualne 
