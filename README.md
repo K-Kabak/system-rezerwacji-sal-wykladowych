@@ -78,19 +78,19 @@ Opis: Aktor przechodzi w zakładke wiadomości, wprowadza email użytkownika do 
 ![Ekran rejestracji aplikacji](images/mockups/register.png "Strona rejestracji")
 
 ----------------------------------
-
-![Ekran logowania aplikacji](images/mockups/login.png.png "Strona logowania")
+### Wygląd strony logowania
+![Ekran logowania aplikacji](images/mockups/login.png "Strona logowania")
 
 ----------------------------------
-
+### Wygląd strony rezerwacji
 ![Ekran rezerwacji](images/mockups/reservation.png "Strona rezerwacji")
 
 ----------------------------------
-
+### Wygląd strony kalendarza
 ![Ekran kalendarza](images/mockups/calendar.png "Strona kalendarza")
 
 ----------------------------------
-
+### Wygląd strony wiadomości
 ![Ekran wiadomości](images/mockups/messages.png "Strona wiadomości")
 
 ----------------------------------
