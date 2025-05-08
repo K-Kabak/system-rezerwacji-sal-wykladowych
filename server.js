@@ -6,58 +6,39 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 
 const app = express();
-// Upewnij się, że port dla backendu API jest poprawny (np. 3000)
 const port = 3000;
-// Adres IP i port, pod którym dostępny jest Twój FRONTEND
-const frontendOrigin = 'http://213.73.1.69:8090'; // <--- SPRAWDŹ I ZAKTUALIZUJ PORT jeśli inny niż 8090
+const frontendOrigin = 'http://213.73.1.69:8090';
 
-// === Konfiguracja CORS ===
-// Pozwala frontendowi (np. z 213.73.1.69:8090) komunikować się z backendem (np. na 213.73.1.69:3000)
 app.use(cors({
-  // Ważne: Podaj DOKŁADNY adres URL Twojego frontendu.
-  // Jeśli możesz uzyskiwać dostęp także przez localhost (np. będąc na serwerze), dodaj go też.
-  origin: [frontendOrigin, 'http://localhost:8090', 'http://127.0.0.1:8090'], // <-- Dodaj wszystkie możliwe adresy frontendu
-  credentials: true // Niezbędne, aby przeglądarka wysyłała ciasteczka sesji z żądaniami
+
+  origin: [frontendOrigin, 'http://localhost:8090', 'http://127.0.0.1:8090'],
+  credentials: true
 }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// === Połączenie z bazą danych ===
-// Host pozostaje '127.0.0.1', bo Node.js łączy się z MySQL na tej samej maszynie.
 const db = mysql.createPool({
   connectionLimit: 10,
-  host: '127.0.0.1', // <-- Zostaw '127.0.0.1' lub 'localhost'
+  host: '127.0.0.1',
   user: 'root',
   password: 'xi*V#BFDAxRAgB4Td6',
   database: 'rezerwacje_sali'
 });
 
-/* --Problemy z połączeniem
-db.connect(err => {
-  if (err) {
-    console.error('❌ Błąd połączenia z MySQL:', err);
-    process.exit(1);
-  }
-  console.log('✅ Połączono z MySQL');
-});
-*/
-
-// === Konfiguracja Sesji ===
+// Konfiguracja Sesji
 app.use(session({
   secret: 'bardzo_tajny_sekret_do_zmiany_w_przyszlosci', // ZMIEŃ TO!
   resave: false,
   saveUninitialized: false,
   cookie: {
-    // secure: false JEST KONIECZNE, gdy dostęp jest przez HTTP.
-    // Gdybyś przeszedł na HTTPS, musiałbyś zmienić na `true`.
     secure: false,
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 // 1 dzień
+    maxAge: 1000 * 60 * 60 * 24
   }
 }));
 
-// === Middleware do sprawdzania autentykacji ===
+// Middleware do sprawdzania autentykacji
 const isAuthenticated = (req, res, next) => {
   if (req.session && req.session.user) {
     return next();
@@ -66,19 +47,19 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
-// === Middleware do sprawdzania roli ===
+// Middleware do sprawdzania roli
 const hasRole = (roleRequired) => {
   return (req, res, next) => {
     if (!req.session.user) {
       return res.status(401).json({ error: 'Brak autoryzacji.' });
     }
-    // Umożliwiamy dostęp adminowi do wszystkiego, co wymaga roli wykładowcy
+
     if (req.session.user.rola === roleRequired || req.session.user.rola === 'administrator') {
-       if (roleRequired === 'wykladowca') { // Sprawdzamy czy wymagana rola to wykładowca
-          return next();
-       }
+      if (roleRequired === 'wykladowca') {
+        return next();
+      }
     }
-    // Dokładne sprawdzenie roli, jeśli nie jest to admin próbujący uzyskać dostęp do zasobów wykładowcy
+
     if (req.session.user.rola === roleRequired) {
       return next();
     } else {
@@ -88,13 +69,13 @@ const hasRole = (roleRequired) => {
 };
 
 
-// === Endpointy API ===
+// Endpointy API
 
-// --- Rejestracja (Poprawiona obsługa transakcji z pulą) ---
-app.post('/register', async (req, res) => { // async tutaj nie jest już potrzebny, bo używamy callbacków, ale nie szkodzi
+//Rejestracja 
+app.post('/register', async (req, res) => {
   const { login, imie, nazwisko, email, haslo, rola, nr_indeksu, grupa, kierunek, tytul_naukowy } = req.body;
 
-  // Walidacja wejściowa (bez zmian)
+  // Walidacja wejściowa 
   if (!login || !imie || !nazwisko || !email || !haslo || !rola) {
     return res.status(400).json({ error: 'Pola: login, imie, nazwisko, email, haslo, rola są wymagane.' });
   }
@@ -102,7 +83,7 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
     return res.status(400).json({ error: 'Dla studenta wymagane są: nr_indeksu, grupa, kierunek.' });
   }
 
-  // 1. Pobierz połączenie z puli
+  // Pobierz połączenie z puli
   db.getConnection((connErr, connection) => {
     if (connErr) {
       console.error("Błąd pobierania połączenia z puli:", connErr);
@@ -118,7 +99,7 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
       }
     };
 
-    // 2. Sprawdź czy użytkownik istnieje (na uzyskanym połączeniu)
+    // Sprawdź czy użytkownik istnieje 
     const checkUserSql = 'SELECT login FROM uzytkownicy WHERE login = ? OR email = ?';
     connection.query(checkUserSql, [login, email], async (checkErr, results) => { // async dla bcrypt jest potrzebny
       if (checkErr) {
@@ -131,9 +112,8 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
         return res.status(409).json({ error: 'Użytkownik o podanym loginie lub adresie email już istnieje.' });
       }
 
-      // Użytkownik nie istnieje, kontynuuj z transakcją
 
-      // 3. Rozpocznij transakcję (na uzyskanym połączeniu)
+      // Rozpocznij transakcję 
       connection.beginTransaction(async (txErr) => { // async dla bcrypt
         if (txErr) {
           console.error("Błąd rozpoczynania transakcji:", txErr);
@@ -142,11 +122,11 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
         }
 
         try {
-          // 4. Haszuj hasło
+          // Haszuj hasło
           const saltRounds = 10;
           const hashedPassword = await bcrypt.hash(haslo, saltRounds);
 
-          // 5. Wstaw użytkownika (w ramach transakcji)
+          // Wstaw użytkownika 
           const insertUserSql = 'INSERT INTO uzytkownicy (login, imie, nazwisko, email, haslo, rola) VALUES (?, ?, ?, ?, ?, ?)';
           connection.query(insertUserSql, [login, imie, nazwisko, email, hashedPassword, rola], (insertErr, insertResult) => {
             if (insertErr) {
@@ -157,7 +137,7 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
               });
             }
 
-            // 6. Wstaw dane roli (jeśli potrzeba, w ramach transakcji)
+            // Wstaw dane roli 
             let insertRoleSql = '';
             let roleParams = [];
             if (rola === 'student') {
@@ -177,7 +157,7 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
                     res.status(500).json({ error: `Błąd serwera podczas zapisywania danych ${rola}.` });
                   });
                 }
-                // 7a. Zatwierdź transakcję (po obu insertach)
+                // Zatwierdź transakcję 
                 connection.commit((commitErr) => {
                   if (commitErr) {
                     console.error("Błąd zatwierdzania transakcji:", commitErr);
@@ -192,7 +172,7 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
                 });
               });
             } else {
-              // 7b. Zatwierdź transakcję (jeśli tylko jeden insert był potrzebny)
+              // Zatwierdź transakcję (jeśli tylko jeden insert był potrzebny)
               connection.commit((commitErr) => {
                 if (commitErr) {
                   console.error("Błąd zatwierdzania transakcji (brak roli):", commitErr);
@@ -210,16 +190,16 @@ app.post('/register', async (req, res) => { // async tutaj nie jest już potrzeb
         } catch (hashError) { // Łapanie błędu z bcrypt.hash
           console.error("Błąd podczas haszowania hasła:", hashError);
           return connection.rollback(() => { // Wycofaj transakcję
-             releaseConnection();
-             res.status(500).json({ error: 'Wystąpił błąd serwera podczas przetwarzania hasła.' });
+            releaseConnection();
+            res.status(500).json({ error: 'Wystąpił błąd serwera podczas przetwarzania hasła.' });
           });
         }
-      }); // Koniec connection.beginTransaction
-    }); // Koniec connection.query dla checkUserSql
-  }); // Koniec db.getConnection
-}); // Koniec app.post('/register', ...)
+      });
+    });
+  });
+});
 
-// --- Logowanie ---
+// Logowanie
 app.post('/login', (req, res) => {
   const { login, haslo } = req.body;
 
@@ -267,27 +247,26 @@ app.post('/login', (req, res) => {
   });
 });
 
-// --- Wylogowanie ---
+// Wylogowanie
 app.post('/logout', (req, res) => {
-   if (req.session.user) {
-     const login = req.session.user.login;
-     req.session.destroy(err => {
-       if (err) {
-         console.error("Błąd niszczenia sesji:", err);
-         return res.status(500).json({ error: 'Nie udało się wylogować.' });
-       }
-       res.clearCookie('connect.sid'); // Upewnij się, że nazwa ciasteczka jest domyślna
-       console.log(`Użytkownik ${login} wylogowany.`);
-       res.json({ success: true, message: 'Wylogowano pomyślnie.' });
-     });
-   } else {
-     // Nawet jeśli nie ma sesji, zwróć sukces, bo celem jest bycie wylogowanym
-     res.json({ success: true, message: 'Użytkownik nie był zalogowany.' });
-   }
+  if (req.session.user) {
+    const login = req.session.user.login;
+    req.session.destroy(err => {
+      if (err) {
+        console.error("Błąd niszczenia sesji:", err);
+        return res.status(500).json({ error: 'Nie udało się wylogować.' });
+      }
+      res.clearCookie('connect.sid');
+      console.log(`Użytkownik ${login} wylogowany.`);
+      res.json({ success: true, message: 'Wylogowano pomyślnie.' });
+    });
+  } else {
+    res.json({ success: true, message: 'Użytkownik nie był zalogowany.' });
+  }
 });
 
 
-// --- Sprawdzenie Sesji ---
+// Sprawdzenie Sesji
 app.get('/check-session', (req, res) => {
   if (req.session && req.session.user) {
     res.json({
@@ -301,7 +280,7 @@ app.get('/check-session', (req, res) => {
   }
 });
 
-// --- Pobieranie sal (chronione) ---
+// Pobieranie sal 
 app.get('/sale', isAuthenticated, (req, res) => {
   db.query('SELECT * FROM sala', (err, results) => {
     if (err) {
@@ -312,9 +291,8 @@ app.get('/sale', isAuthenticated, (req, res) => {
   });
 });
 
-// === Endpoint: Pobieranie listy unikalnych grup studenckich ===
+// Endpoint: Pobieranie listy unikalnych grup studenckich
 app.get('/grupy', isAuthenticated, (req, res) => {
-  // Zapytanie wybiera unikalne, niepuste nazwy grup z tabeli studenci i sortuje je
   const sql = "SELECT DISTINCT grupa FROM studenci WHERE grupa IS NOT NULL AND grupa != '' ORDER BY grupa ASC";
 
   db.query(sql, (err, results) => {
@@ -322,73 +300,70 @@ app.get('/grupy', isAuthenticated, (req, res) => {
       console.error("Błąd pobierania listy grup:", err);
       return res.status(500).json({ error: "Błąd serwera podczas pobierania listy grup." });
     }
-    // Wynik 'results' to tablica obiektów np. [{grupa: 'Grupa 1'}, {grupa: 'Grupa 2'}]
-    // Chcemy zwrócić tylko tablicę stringów z nazwami grup.
     const grupy = results.map(row => row.grupa);
     console.log("Zwrócono listę grup:", grupy);
-    res.json(grupy); // Zwróć tablicę nazw grup
+    res.json(grupy);
   });
 });
 
 
-// --- Pobieranie rezerwacji (chronione, logika filtrowania) ---
+// Pobieranie rezerwacji 
 app.get('/rezerwacje', isAuthenticated, (req, res) => {
-    const user = req.session.user;
-    let sql = 'SELECT * FROM rezerwacje';
-    let params = [];
+  const user = req.session.user;
+  let sql = 'SELECT * FROM rezerwacje';
+  let params = [];
 
-    console.log(`Pobieranie rezerwacji dla użytkownika ${user.login} (rola: ${user.rola})`);
+  console.log(`Pobieranie rezerwacji dla użytkownika ${user.login} (rola: ${user.rola})`);
 
-    if (user.rola === 'student') {
-        const getGroupSql = 'SELECT grupa FROM studenci WHERE login = ?';
-        db.query(getGroupSql, [user.login], (groupErr, groupResults) => {
-            if (groupErr) {
-                console.error(`Błąd pobierania grupy dla studenta ${user.login}:`, groupErr);
-                return res.status(500).json({ error: 'Błąd serwera przy pobieraniu grupy studenta.' });
-            }
-            if (groupResults.length > 0 && groupResults[0].grupa) {
-                const grupaStudenta = groupResults[0].grupa;
-                console.log(`Student ${user.login} należy do grupy ${grupaStudenta}. Filtrowanie rezerwacji.`);
-                sql += ' WHERE grupa = ?';
-                params.push(grupaStudenta);
-                executeQuery();
-            } else {
-                console.warn(`Nie znaleziono grupy dla studenta ${user.login} w tabeli studenci. Zwracam puste rezerwacje.`);
-                res.json([]);
-            }
-        });
-    } else if (user.rola === 'wykladowca' || user.rola === 'administrator') {
-        console.log(`Użytkownik ${user.login} (rola: ${user.rola}) pobiera wszystkie rezerwacje.`);
+  if (user.rola === 'student') {
+    const getGroupSql = 'SELECT grupa FROM studenci WHERE login = ?';
+    db.query(getGroupSql, [user.login], (groupErr, groupResults) => {
+      if (groupErr) {
+        console.error(`Błąd pobierania grupy dla studenta ${user.login}:`, groupErr);
+        return res.status(500).json({ error: 'Błąd serwera przy pobieraniu grupy studenta.' });
+      }
+      if (groupResults.length > 0 && groupResults[0].grupa) {
+        const grupaStudenta = groupResults[0].grupa;
+        console.log(`Student ${user.login} należy do grupy ${grupaStudenta}. Filtrowanie rezerwacji.`);
+        sql += ' WHERE grupa = ?';
+        params.push(grupaStudenta);
         executeQuery();
-    } else {
-         console.warn(`Nieobsługiwana rola użytkownika: ${user.rola}`);
-         res.status(403).json({error: "Nie masz uprawnień do przeglądania rezerwacji."});
-    }
+      } else {
+        console.warn(`Nie znaleziono grupy dla studenta ${user.login} w tabeli studenci. Zwracam puste rezerwacje.`);
+        res.json([]);
+      }
+    });
+  } else if (user.rola === 'wykladowca' || user.rola === 'administrator') {
+    console.log(`Użytkownik ${user.login} (rola: ${user.rola}) pobiera wszystkie rezerwacje.`);
+    executeQuery();
+  } else {
+    console.warn(`Nieobsługiwana rola użytkownika: ${user.rola}`);
+    res.status(403).json({ error: "Nie masz uprawnień do przeglądania rezerwacji." });
+  }
 
-    function executeQuery() {
-        db.query(sql, params, (err, results) => {
-            if (err) {
-                console.error(`Błąd pobierania rezerwacji (SQL: ${sql}, Params: ${params}):`, err);
-                return res.status(500).json({ error: 'Błąd serwera przy pobieraniu rezerwacji.' });
-            }
-            console.log(`Zwrócono ${results.length} rezerwacji dla użytkownika ${user.login}.`);
-            res.json(results);
-        });
-    }
+  function executeQuery() {
+    db.query(sql, params, (err, results) => {
+      if (err) {
+        console.error(`Błąd pobierania rezerwacji (SQL: ${sql}, Params: ${params}):`, err);
+        return res.status(500).json({ error: 'Błąd serwera przy pobieraniu rezerwacji.' });
+      }
+      console.log(`Zwrócono ${results.length} rezerwacji dla użytkownika ${user.login}.`);
+      res.json(results);
+    });
+  }
 });
 
 
-// --- Dodawanie rezerwacji (chronione, tylko dla wykładowcy/admina) ---
+// Dodawanie rezerwacji (tylko dla wykładowcy/admina)
 app.post('/rezerwacje', isAuthenticated, hasRole('wykladowca'), (req, res) => {
   const { nr_sali, grupa, typ, termin, godzina_od, godzina_do } = req.body;
   const rezerwujacyLogin = req.session.user.login;
 
-  // Prosta walidacja danych wejściowych
   if (!nr_sali || !grupa || !typ || !termin || !godzina_od || !godzina_do) {
     return res.status(400).json({ error: 'Brakuje wymaganych danych rezerwacji.' });
   }
   if (new Date(`1970-01-01T${godzina_do}:00`) <= new Date(`1970-01-01T${godzina_od}:00`)) {
-      return res.status(400).json({ error: 'Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia.' });
+    return res.status(400).json({ error: 'Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia.' });
   }
 
   console.log(`Próba rezerwacji przez ${rezerwujacyLogin}: Sala ${nr_sali}, Grupa ${grupa}, Termin ${termin} ${godzina_od}-${godzina_do}`);
@@ -402,23 +377,20 @@ app.post('/rezerwacje', isAuthenticated, hasRole('wykladowca'), (req, res) => {
     LIMIT 1
 `;
   db.query(checkConflictSql, [nr_sali, termin, godzina_do, godzina_od], (conflictErr, conflictResults) => {
-    // ... reszta kodu (obsługa conflictErr, conflictResults) pozostaje bez zmian ...
     if (conflictErr) {
       console.error("Błąd podczas sprawdzania konfliktu:", conflictErr);
       console.error("!!! Błąd SQL podczas sprawdzania konfliktu !!!");
-        console.error("Wykonano SQL:", checkConflictSql);
-        console.error("Użyte Parametry:", [nr_sali, termin, godzina_do, godzina_od]);
-        console.error("Kod Błędu MySQL:", conflictErr.code); // np. ER_PARSE_ERROR, ER_BAD_FIELD_ERROR
-        console.error("Numer Błędu MySQL:", conflictErr.errno);
-        console.error("Wiadomość Błędu MySQL:", conflictErr.sqlMessage); // Szczegółowy komunikat z MySQL
-        console.error("Pełny Obiekt Błędu:", conflictErr); // Cały obiekt błędu
-        // Zmieńmy lekko odpowiedź dla użytkownika, aby wskazać na logi
-        return res.status(500).send({error: "Błąd serwera podczas sprawdzania konfliktu. Sprawdź logi serwera po szczegóły."});
-        // ===========================================================
+      console.error("Wykonano SQL:", checkConflictSql);
+      console.error("Użyte Parametry:", [nr_sali, termin, godzina_do, godzina_od]);
+      console.error("Kod Błędu MySQL:", conflictErr.code);
+      console.error("Numer Błędu MySQL:", conflictErr.errno);
+      console.error("Wiadomość Błędu MySQL:", conflictErr.sqlMessage);
+      console.error("Pełny Obiekt Błędu:", conflictErr);
+      return res.status(500).send({ error: "Błąd serwera podczas sprawdzania konfliktu. Sprawdź logi serwera po szczegóły." });
     }
 
     if (conflictResults.length > 0) {
-       const conflict = conflictResults[0];
+      const conflict = conflictResults[0];
       console.warn(`Konflikt rezerwacji dla sali ${nr_sali} w terminie ${termin} ${godzina_od}-${godzina_do}. Istniejąca rezerwacja ID: ${conflict.id}, Grupa: ${conflict.grupa}, Rezerwujący: ${conflict.rezerwujacy_login}`);
       return res.status(409).json({ error: `Sala jest już zajęta w podanym terminie (konflikt z rezerwacją grupy ${conflict.grupa}).` });
     }
@@ -435,36 +407,32 @@ app.post('/rezerwacje', isAuthenticated, hasRole('wykladowca'), (req, res) => {
       termin,
       godzina_od,
       godzina_do,
-      req.session.user.login,     // <-- DODANO LOGIN
+      req.session.user.login,
       req.session.user.imie,
-      req.session.user.nazwisko], 
+      req.session.user.nazwisko],
       (insertErr, result) => {
-       if (insertErr) {
-          // Obsługa błędów pozostaje taka sama, ale teraz logujemy inne parametry w razie czego
+        if (insertErr) {
           console.error("Błąd wstawiania rezerwacji:", insertErr);
-          console.error("Użyte Parametry:", [nr_sali, grupa, typ.toLowerCase(), termin, godzina_od, godzina_do, req.session.user.imie, req.session.user.nazwisko]); // Zaktualizowane logowanie parametrów
-          // ... reszta obsługi błędów ...
-           // Sprawdź błędy związane z kluczem obcym lub typem ENUM
-           if (insertErr.code === 'ER_NO_REFERENCED_ROW_2' && insertErr.message.includes('rezerwacje_ibfk_1')) {
-               return res.status(400).json({ error: `Podana sala (${nr_sali}) nie istnieje.` });
-           } else if (insertErr.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD' || insertErr.code === 'ER_DATA_TOO_LONG' || insertErr.code === 'WARN_DATA_TRUNCATED') {
-               console.error(`Nieprawidłowa wartość dla pola 'typ': ${typ.toLowerCase()}`);
-               return res.status(400).json({ error: `Nieprawidłowy typ sali: '${typ}'. Dopuszczalne: aula, wykladowa, komputerowa.` });
-           }
-          return res.status(500).send({error: "Błąd serwera podczas dodawania rezerwacji."});
-       }
-       // Sukces
-       console.log(`Dodano rezerwację (ID: ${result.insertId}) przez ${req.session.user.imie} ${req.session.user.nazwisko}.`); // Zaktualizowano log sukcesu
-       res.status(201).json({ success: true, id: result.insertId });
-    });
+          console.error("Użyte Parametry:", [nr_sali, grupa, typ.toLowerCase(), termin, godzina_od, godzina_do, req.session.user.imie, req.session.user.nazwisko]);
+          if (insertErr.code === 'ER_NO_REFERENCED_ROW_2' && insertErr.message.includes('rezerwacje_ibfk_1')) {
+            return res.status(400).json({ error: `Podana sala (${nr_sali}) nie istnieje.` });
+          } else if (insertErr.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD' || insertErr.code === 'ER_DATA_TOO_LONG' || insertErr.code === 'WARN_DATA_TRUNCATED') {
+            console.error(`Nieprawidłowa wartość dla pola 'typ': ${typ.toLowerCase()}`);
+            return res.status(400).json({ error: `Nieprawidłowy typ sali: '${typ}'. Dopuszczalne: aula, wykladowa, komputerowa.` });
+          }
+          return res.status(500).send({ error: "Błąd serwera podczas dodawania rezerwacji." });
+        }
+        console.log(`Dodano rezerwację (ID: ${result.insertId}) przez ${req.session.user.imie} ${req.session.user.nazwisko}.`);
+        res.status(201).json({ success: true, id: result.insertId });
+      });
   });
 });
-// === Nowy Endpoint: Pobieranie rezerwacji dla konkretnej daty ===
+// Nowy Endpoint: Pobieranie rezerwacji dla konkretnej daty
 app.get('/rezerwacje/data/:termin', isAuthenticated, (req, res) => {
   const user = req.session.user;
-  const { termin } = req.params; // Pobierz datę z parametru URL
+  const { termin } = req.params;
 
-  // Prosta walidacja formatu daty (YYYY-MM-DD) - można dodać bardziej rygorystyczną
+  // Prosta walidacja formatu daty
   if (!termin || !/^\d{4}-\d{2}-\d{2}$/.test(termin)) {
     return res.status(400).json({ error: 'Nieprawidłowy format daty. Oczekiwano YYYY-MM-DD.' });
   }
@@ -488,6 +456,7 @@ app.get('/rezerwacje/data/:termin', isAuthenticated, (req, res) => {
 `;
   let params = [termin];
 
+
   // Dodatkowe filtrowanie dla studenta (jeśli ma widzieć tylko swoją grupę w modalu)
   if (user.rola === 'student') {
     const getGroupSql = 'SELECT grupa FROM studenci WHERE login = ?';
@@ -499,22 +468,19 @@ app.get('/rezerwacje/data/:termin', isAuthenticated, (req, res) => {
       if (groupResults.length > 0 && groupResults[0].grupa) {
         const grupaStudenta = groupResults[0].grupa;
         console.log(`Student ${user.login} (modal) należy do grupy ${grupaStudenta}. Filtrowanie rezerwacji.`);
-        // Dodajemy warunek AND grupa = ? do istniejącego zapytania
         sql += ' AND grupa = ?';
-        params.push(grupaStudenta); // Dodajemy grupę do parametrów
+        params.push(grupaStudenta);
         executeQuery();
       } else {
         console.warn(`Nie znaleziono grupy dla studenta ${user.login} (modal). Zwracam puste rezerwacje dla tej daty.`);
-        res.json([]); // Zwróć pustą listę, jeśli student nie ma grupy
+        res.json([]);
       }
     });
   } else {
-    // Wykładowca/Admin widzi wszystkie rezerwacje dla danego dnia
     executeQuery();
   }
 
   function executeQuery() {
-    // Sortuj wyniki po godzinie rozpoczęcia
     sql += ' ORDER BY godzina_od';
     db.query(sql, params, (err, results) => {
       if (err) {
@@ -522,14 +488,22 @@ app.get('/rezerwacje/data/:termin', isAuthenticated, (req, res) => {
         return res.status(500).json({ error: 'Błąd serwera przy pobieraniu rezerwacji dla podanej daty.' });
       }
       console.log(`Zwrócono ${results.length} rezerwacji dla daty ${termin} (użytkownik: ${user.login}).`);
-      res.json(results); // Zwróć znalezione rezerwacje (lub pustą tablicę)
+      res.json(results);
     });
   }
 });
 
-// === Wysyłanie wiadomości ===
+function censorBadWords(text) {
+  const badWords = ['chuj', 'kurwa', 'pizda', 'jebany', 'skurwiel'];
+  const regex = new RegExp(`\\b(${badWords.join('|')})\\b`, 'gi');
+  return text.replace(regex, (match) => '*'.repeat(match.length));
+}
+
+
+// Wysyłanie wiadomości
 app.post('/wiadomosci', isAuthenticated, (req, res) => {
   const { email, tresc } = req.body;
+  const ocenzurowanaTresc = censorBadWords(tresc);
   const nadawca_email = req.session.user.email;
 
   if (!email || !tresc) {
@@ -544,55 +518,48 @@ app.post('/wiadomosci', isAuthenticated, (req, res) => {
 
     const odbiorca_email = results[0].email;
     const insertSql = 'INSERT INTO wiadomosci (nadawca_email, odbiorca_email, tresc) VALUES (?, ?, ?)';
-    db.query(insertSql, [nadawca_email, odbiorca_email, tresc], (insertErr) => {
+    const ocenzurowanaTresc = censorBadWords(tresc);
+    db.query(insertSql, [nadawca_email, odbiorca_email, ocenzurowanaTresc], (insertErr) => {
+
       if (insertErr) return res.status(500).json({ error: 'Błąd zapisu wiadomości.' });
       res.json({ success: true, message: 'Wiadomość została wysłana.' });
     });
   });
 });
-// === Nowy Endpoint: Sprawdzanie statusu nieprzeczytanych wiadomości ===
+// Nowy Endpoint: Sprawdzanie statusu nieprzeczytanych wiadomości
 app.get('/api/unread-status', isAuthenticated, (req, res) => {
-  const odbiorcaEmail = req.session.user.email; // Pobierz email z sesji
+  const odbiorcaEmail = req.session.user.email;
 
   // Zapytanie liczące nieprzeczytane wiadomości dla danego odbiorcy
   const sql = 'SELECT COUNT(*) AS unreadCount FROM wiadomosci WHERE odbiorca_email = ? AND is_read = FALSE';
 
   db.query(sql, [odbiorcaEmail], (err, results) => {
-      if (err) {
-          console.error(`Błąd sprawdzania nieprzeczytanych wiadomości dla ${odbiorcaEmail}:`, err);
-          return res.status(500).json({ error: 'Błąd serwera podczas sprawdzania wiadomości.' });
-      }
-
-      // Sprawdź, czy liczba nieprzeczytanych jest większa od 0
-      const hasUnread = results[0].unreadCount > 0;
-      console.log(`[Unread Check] User: ${odbiorcaEmail}, Has Unread: ${hasUnread}`); // Log do debugowania
-      res.json({ hasUnread: hasUnread }); // Zwróć { hasUnread: true } lub { hasUnread: false }
+    if (err) {
+      console.error(`Błąd sprawdzania nieprzeczytanych wiadomości dla ${odbiorcaEmail}:`, err);
+      return res.status(500).json({ error: 'Błąd serwera podczas sprawdzania wiadomości.' });
+    }
+    const hasUnread = results[0].unreadCount > 0;
+    console.log(`[Unread Check] User: ${odbiorcaEmail}, Has Unread: ${hasUnread}`);
+    res.json({ hasUnread: hasUnread });
   });
 });
-// === Nowy Endpoint: Oznaczanie wiadomości jako przeczytane ===
+// Nowy Endpoint: Oznaczanie wiadomości jako przeczytane
 app.post('/api/mark-read', isAuthenticated, (req, res) => {
-  const odbiorcaEmail = req.session.user.email; // Pobierz email z sesji
+  const odbiorcaEmail = req.session.user.email;
 
-  // Zapytanie aktualizujące status is_read na TRUE dla wiadomości użytkownika, które są nieprzeczytane
   const sql = 'UPDATE wiadomosci SET is_read = TRUE WHERE odbiorca_email = ? AND is_read = FALSE';
 
   db.query(sql, [odbiorcaEmail], (err, result) => {
-      if (err) {
-          console.error(`Błąd oznaczania wiadomości jako przeczytane dla ${odbiorcaEmail}:`, err);
-          return res.status(500).json({ error: 'Błąd serwera podczas aktualizacji statusu wiadomości.' });
-      }
-
-      // result.affectedRows zawiera liczbę zaktualizowanych wierszy
-      console.log(`[Mark Read] User: ${odbiorcaEmail}, Marked: ${result.affectedRows} messages as read.`);
-      // Odpowiedź 204 No Content jest odpowiednia, bo nie zwracamy żadnych danych
-      res.sendStatus(204);
+    if (err) {
+      console.error(`Błąd oznaczania wiadomości jako przeczytane dla ${odbiorcaEmail}:`, err);
+      return res.status(500).json({ error: 'Błąd serwera podczas aktualizacji statusu wiadomości.' });
+    }
+    console.log(`[Mark Read] User: ${odbiorcaEmail}, Marked: ${result.affectedRows} messages as read.`);
+    res.sendStatus(204);
   });
 });
 
-
-
-
-// === Pobieranie wiadomości (ZMODYFIKOWANE: dodano is_read) ===
+// Pobieranie wiadomości
 app.get('/wiadomosci', isAuthenticated, (req, res) => {
   const email = req.session.user.email;
   const sql = `
@@ -601,19 +568,17 @@ app.get('/wiadomosci', isAuthenticated, (req, res) => {
     JOIN uzytkownicy u ON u.email = w.nadawca_email
     WHERE w.odbiorca_email = ?
     ORDER BY w.data_wyslania DESC
-  `; // Poprawiono alias dla email nadawcy, żeby uniknąć konfliktu z emailem odbiorcy z sesji
+  `;
   db.query(sql, [email], (err, results) => {
     if (err) {
-        console.error(`Błąd pobierania wiadomości dla ${email}:`, err);
-        return res.status(500).json({ error: 'Błąd pobierania wiadomości.' });
+      console.error(`Błąd pobierania wiadomości dla ${email}:`, err);
+      return res.status(500).json({ error: 'Błąd pobierania wiadomości.' });
     }
-    // Zwróć wyniki (teraz zawierają pole is_read)
     res.json(results);
   });
 });
-// WAŻNE: Upewnij się, że zastępujesz istniejący blok `app.get('/wiadomosci', ...)` tym nowym.
 
-// === Usuwanie wiadomości ===
+// Usuwanie wiadomości
 app.delete('/wiadomosci/:id', isAuthenticated, (req, res) => {
   const id = req.params.id;
   const odbiorcaEmail = req.session.user.email;
@@ -651,36 +616,24 @@ app.get('/users/emails', async (req, res) => {
   }
 });
 
-
-
-
-
 // === Uruchomienie serwera ===
-// Serwer nasłuchuje na wszystkich interfejsach (0.0.0.0) na podanym porcie,
-// więc będzie dostępny przez localhost ORAZ przez publiczny adres IP.
 app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 Serwer działa i nasłuchuje na porcie ${port}`);
-  console.log(`   Dostępny pod adresem: http://localhost:${port} oraz http://${getPublicIp()}:${port}`); // Wyświetl oba adresy dla informacji
+  console.log(`Serwer działa i nasłuchuje na porcie ${port}`);
+  console.log(`Dostępny pod adresem: http://localhost:${port} oraz http://${getPublicIp()}:${port}`);
 });
-
-// Funkcja pomocnicza do uzyskania publicznego IP (dla celów informacyjnych w logach)
 // Wymaga instalacji: npm install os
 const os = require('os');
 function getPublicIp() {
-    const interfaces = os.networkInterfaces();
-    for (const name of Object.keys(interfaces)) {
-        for (const iface of interfaces[name]) {
-            // Pomijaj adresy inne niż IPv4 oraz adresy wewnętrzne (127.x.x.x)
-            if ('IPv4' !== iface.family || iface.internal !== false) {
-                continue;
-            }
-            // Proste sprawdzenie czy to nie jest adres z zakresu prywatnego (może wymagać rozbudowy)
-            if (!iface.address.startsWith('192.168.') && !iface.address.startsWith('10.') && !iface.address.startsWith('172.16.')) {
-                 // Zakładamy, że pierwszy znaleziony nie-prywatny IPv4 to publiczny IP
-                 // UWAGA: To może nie być w 100% niezawodne w złożonych konfiguracjach sieciowych
-                 return iface.address;
-            }
-        }
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if ('IPv4' !== iface.family || iface.internal !== false) {
+        continue;
+      }
+      if (!iface.address.startsWith('192.168.') && !iface.address.startsWith('10.') && !iface.address.startsWith('172.16.')) {
+        return iface.address;
+      }
     }
-    return 'NIE_ZNALEZIONO_PUBLICZNEGO_IP'; // Lub zwróć null/pusty string
+  }
+  return 'NIE_ZNALEZIONO_PUBLICZNEGO_IP';
 }
