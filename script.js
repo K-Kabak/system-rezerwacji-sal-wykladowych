@@ -39,6 +39,8 @@ const studentFields = document.getElementById("student-fields");
 const wykladowcaFields = document.getElementById("wykladowca-fields");
 const emailInput = document.getElementById("msg-to");
 const emailSuggestions = document.getElementById("email-suggestions");
+const sidebar = document.querySelector('.sidebar');
+const toggleBtn = document.getElementById('toggle-sidebar');
 
 const dayDetailsModal = document.getElementById("day-details-modal");
 const modalDateElement = document.getElementById("modal-date");
@@ -618,29 +620,37 @@ const loadRooms = async () => {
         .addEventListener("click", async () => {
           bookingErrorElement.textContent = "";
           const grupa = selectElement.value;
-          if (grupa === "") {
-            if (bookingErrorElement) bookingErrorElement.textContent = "";
+          if (!grupa) {
             showNotification(
-              "Błąd Rezerwacji",
-              error.message || "Wystąpił nieznany błąd.",
+              "Błąd rezerwacji",
+              "Musisz wybrać grupę przed dokonaniem rezerwacji.",
               false
             );
             return;
           }
+          
           const termin = row.querySelector(".termin-input").value;
           const godzina_od = row.querySelector(".godzina-od-input").value;
           const godzina_do = row.querySelector(".godzina-do-input").value;
 
           if (!grupa || !termin || !godzina_od || !godzina_do) {
-            bookingErrorElement.textContent =
-              "Wszystkie pola (grupa, data, godzina od, godzina do) są wymagane.";
+            showNotification(
+              "Błąd rezerwacji",
+              "Wszystkie pola (grupa, data, godzina od, godzina do) są wymagane.",
+              false
+            );
             return;
           }
+          
           if (godzina_do <= godzina_od) {
-            bookingErrorElement.textContent =
-              "Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia.";
+            showNotification(
+              "Błąd rezerwacji",
+              "Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia.",
+              false
+            );
             return;
           }
+          
 
           try {
             let typRezerwacji = room.typ.toLowerCase();
@@ -670,8 +680,12 @@ const loadRooms = async () => {
             renderCurrentMonth();
           } catch (error) {
             console.error("Błąd podczas rezerwacji:", error);
-            bookingErrorElement.textContent =
-              error.message || "Wystąpił błąd podczas rezerwacji.";
+            showNotification(
+              "Błąd rezerwacji",
+              error.message || "Wystąpił błąd podczas rezerwacji.",
+              false
+            );
+            
           }
         });
     });
@@ -1020,3 +1034,24 @@ window.onload = async () => {
     }
   });
 };
+
+    document.querySelector('.hamburger').addEventListener('click', function() {
+    document.querySelector('.sidebar').classList.toggle('open');
+  });
+  
+
+  toggleBtn.addEventListener('click', () => {
+    const isActive = sidebar.classList.toggle('active');
+    toggleBtn.textContent = isActive ? '✖' : '☰';
+
+    // Blokowanie lub przywracanie scrolla
+    if (isActive && window.innerWidth <= 768) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+  });
+
+
+
+  

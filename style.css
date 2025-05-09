@@ -2,7 +2,7 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: #111;
+  background: #191919;
   color: #fff;
   line-height: 1.6;
 }
@@ -256,6 +256,131 @@ button:hover {
   margin: 5px 0;
 }
 
+
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 0;  
+  left: 10px;
+  z-index: 1001;
+  background: #3a3aff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+.header {
+  position: relative;
+  z-index: 1001;
+}
+
+
+@media (max-width: 768px) {
+  
+  .hamburger {
+    display: block;
+  }
+
+  body.no-scroll {
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .main-content {
+    margin-top: 50px;  
+  }
+  
+  .sidebar {
+    position: fixed;
+    left: 400px;
+    top: 0;
+    width: 90%;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .main-content {
+    padding: 10px;
+  }
+
+  .calendar-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .calendar-header {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-size: 10px;
+    text-align: center;
+    margin-bottom: 5px;
+    word-break: break-word;
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .calendar-day {
+    font-size: 10px;
+    min-height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 2px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .day-number {
+    display: flex;
+    flex-direction: column;
+    align-items: center !important;
+    font-weight: bold;
+  }
+
+  .dot-placeholder {
+    display: block;
+    margin-top: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: transparent; 
+  
+  }
+
+  .calendar div {
+    min-height: 40px !important;
+  }
+
+}
+
 /* === LEGENDA === */
 .legend,
 #legend {
@@ -289,19 +414,65 @@ button:hover {
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #000;
-  border: 1px solid #333;
+  margin-top: 20px;
 }
 
-th,
-td {
-  padding: 12px;
-  border: 1px solid #333;
-  text-align: center;
+th, td {
+  padding: 10px;
+  border: 1px solid #333333;
+  text-align: left;
 }
 
 th {
-  background: #222;
+  background-color: #1a1a1a;
+}
+
+/* Styl dla przycisku */
+.booking-button {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+/* Błąd */
+.error-message {
+  color: red;
+  margin-top: 15px;
+}
+
+/* === Wersja mobilna === */
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody tr {
+    margin-bottom: 20px;
+    border: 1px solid #333333;
+    padding: 10px;
+    background-color: #1a1a1a;
+  }
+
+  tbody td {
+    border: none;
+    padding: 6px 0;
+    position: relative;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 3px;
+    color: #333;
+  }
+
+  .booking-button {
+    width: 100%;
+  }
 }
 
 /* === CALENDAR HEADER === */
@@ -767,7 +938,6 @@ th {
   .auth-panel {
     flex-basis: 100%;
     max-width: 450px;
-    /* Ograniczenie szerokości formularza na mobilnych */
     padding: 30px;
     margin-top: 30px;
     margin-bottom: 30px;
@@ -780,7 +950,7 @@ th {
 
 /* --- Stylizacja paska przewijania dla panelu formularza --- */
 
-/* Dla przeglądarek WebKit (Chrome, Safari, Edge, Opera) */
+
 .auth-panel::-webkit-scrollbar {
   width: 8px;
 }
@@ -800,13 +970,34 @@ th {
   background-color: #777;
 }
 
-/* Dla Firefox */
+
 .auth-panel {
   scrollbar-width: thin;
   scrollbar-color: #555 #1f1f1f;
 }
 
-/* === Style dla Dashboardu === */
+
 #dashboard-view {
   display: none;
+}
+
+/* === Style wiadomosci dla urządzeń mobilnych === */
+.wiadomosci-styl {
+  display: flex;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .wiadomosci-styl {
+    display: block;
+  }
+
+  .wiadomosci-styl > * {
+    margin-bottom: 30px;
+  }
+
+  
+  .wiadomosci-styl > *:last-child {
+    margin-bottom: 0;
+  }
 }

@@ -86,6 +86,7 @@
     </div>
   </div>
   <div id="dashboard-view" class="dashboard">
+    <button id="toggle-sidebar" class="hamburger">☰</button>
     <aside class="sidebar">
       <div class="logo">
         <img src="images/logo.png" alt="Logo" />
@@ -108,7 +109,6 @@
         <p id="user-details" style="font-weight: bold;">...</p>
       </div>
       <div class="bottom-menu">
-        <p>⚙️ Ustawienia</p>
         <p><button id="btn-logout" style="background: #555; padding: 8px 15px; width: auto;">🚪 Wyloguj</button></p>
       </div>
     </aside>
@@ -145,7 +145,7 @@
     <!--Wiadmości-->
     <section class="main-content hidden" id="view-wiadomosci">
       <h2>Wiadomości</h2>
-      <div style="display: flex; gap: 30px;">
+      <div class="wiadomosci-styl" id="wiadomosci-styl">
 
         <!-- Lewa strona – formularz -->
         <div style="flex: 1;">
