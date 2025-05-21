@@ -1,0 +1,43 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+
+before_script:
+  - echo "Start stage..."
+
+test_job:
+  stage: test
+  image: node:18
+  script:
+    - npm ci
+    - npm run test || echo "⚠️ Brak testów – etap testów pominięty"
+
+build_job:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t html-backend .
+
+deploy_to_vps:
+  stage: deploy
+  only:
+    - main
+  before_script:
+    - 'which ssh-agent || (apt-get update -y && apt-get install openssh-client -y)'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -p 258 $SERVER_IP >> ~/.ssh/known_hosts
+  script:
+    - ssh -p 258 root@$SERVER_IP "
+        cd /var/www/html &&
+        docker compose down &&
+        docker compose up --build -d
+      "

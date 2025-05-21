@@ -1,0 +1,43 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: xi*V#BFDAxRAgB4Td6
+      MYSQL_DATABASE: rezerwacje_sali
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+  backend:
+    build: .
+    container_name: node-backend
+    depends_on:
+      - mysql
+    ports:
+      - "8090:3000"  # Udostępni backend przez http://213.73.1.69:8090
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge
