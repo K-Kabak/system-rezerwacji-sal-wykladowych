@@ -1,0 +1,53 @@
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const mysql = require('mysql2');
+
+const app = express();
+const port = 3000;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+// Polaczenie
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'xi*V#BFDAxRAgB4Td6',
+  database: 'rezerwacje_sali'
+});
+
+db.connect(err => {
+  if (err) throw err;
+  console.log('Połączono z MySQL');
+});
+
+// Pobierz wszystkie rezerwacje
+app.get('/rezerwacje', (req, res) => {
+  db.query('SELECT * FROM rezerwacja', (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+// Dodaj rezerwację
+app.post('/rezerwacje', (req, res) => {
+  const { sala, dzien, godzina_od, godzina_do } = req.body;
+  const sql = 'INSERT INTO rezerwacja (sala, dzien, godzina_od, godzina_do) VALUES (?, ?, ?, ?)';
+  db.query(sql, [sala, dzien, godzina_od, godzina_do], (err, result) => {
+    if (err) throw err;
+    res.json({ success: true });
+  });
+});
+
+// Pobierz sale
+app.get('/sale', (req, res) => {
+  db.query('SELECT * FROM sale', (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Serwer działa na http://localhost:${port}`);
+});

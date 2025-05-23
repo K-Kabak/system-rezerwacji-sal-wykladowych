@@ -9,6 +9,7 @@ const app = express();
 const port = 3000;
 const frontendOrigin = 'http://213.73.1.69:8090';
 
+
 app.use(cors({
 
   origin: [frontendOrigin, 'http://localhost:8090', 'http://127.0.0.1:8090'],
@@ -28,7 +29,7 @@ const db = mysql.createPool({
 
 // Konfiguracja Sesji
 app.use(session({
-  secret: 'bardzo_tajny_sekret_do_zmiany_w_przyszlosci', // ZMIEŃ TO!
+  secret: 'bardzo_tajny_sekret_do_zmiany_w_przyszlosci', 
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -67,6 +68,7 @@ const hasRole = (roleRequired) => {
     }
   };
 };
+
 
 
 // Endpointy API
