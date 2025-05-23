@@ -193,6 +193,9 @@ Opis: Aktor przechodzi w zakładke wiadomości, wprowadza email użytkownika do 
 | 14 | Oznacz jako przeczytane             | POST   | `http://213.73.1.69:3000/api/mark-read`              | —                                                                                        | `204 No Content`                                                                                                                                                                                                                                                                                                                                                       |
 | 15 | Podpowiedzi emaili                  | GET    | `http://213.73.1.69:3000/users/emails?query=szym`    | —                                                                                        | `[ "szymon02g@wp.pl" ]`                                                                                                                                                                                                                                                                                                                                                |
 
+---
+### Testy Jednostkowe i e2e dodane
+---
 ## Licencja
 ----------------------------------
 ## Podsumowanie
